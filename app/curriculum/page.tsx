@@ -10,6 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Link from 'next/link';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -88,6 +89,14 @@ export default async function CurriculumPage({ searchParams }: { searchParams: P
                                                 <Typography variant="body2" gutterBottom><strong>Activity:</strong> {week.activity}</Typography>
                                                 <Typography variant="body2" gutterBottom><strong>Objective:</strong> {week.objective}</Typography>
                                                 <Typography variant="body2" gutterBottom><strong>Historian Lesson:</strong> {week.historianLesson}</Typography>
+
+                                                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                                                    <Link href={`/curriculum/${week.id}/manual`} style={{ textDecoration: 'none' }}>
+                                                        <Button variant="contained" color="secondary" size="small">
+                                                            📖 Read Historian's Manual
+                                                        </Button>
+                                                    </Link>
+                                                </Box>
 
                                                 <WeekTracker
                                                     weekId={week.id}

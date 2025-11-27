@@ -123,3 +123,46 @@ export async function syncGameData() {
     revalidatePath('/games');
     revalidatePath('/curriculum');
 }
+
+export async function getOrCreateLessonContent(weekId: string) {
+    const week = await prisma.week.findUnique({
+        where: { id: weekId },
+        include: { game: true, lessonContent: true }
+    });
+
+    if (!week) throw new Error("Week not found");
+
+    // Return cached content if it exists
+    if (week.lessonContent) {
+        return week.lessonContent.content;
+    }
+
+    // Generate new content
+    const { generateLessonContent } = await import('@/lib/ai');
+    const content = await generateLessonContent(
+        week.title,
+        week.game?.title || "Unknown Game",
+        week.objective,
+        week.activity
+    );
+
+    // Save to DB
+    await prisma.lessonContent.create({
+        data: {
+            weekId: week.id,
+            content: content
+        }
+    });
+
+    return content;
+}
+
+export async function regenerateLessonContent(weekId: string) {
+    // Delete existing content
+    await prisma.lessonContent.deleteMany({
+        where: { weekId: weekId }
+    });
+
+    // Generate new content
+    return getOrCreateLessonContent(weekId);
+}

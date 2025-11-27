@@ -16,7 +16,7 @@ const theme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#6200EA', // Electric Indigo
+            main: '#B388FF', // Deep Purple A200 (Better contrast for dark mode)
         },
         secondary: {
             main: '#C6FF00', // Neon Lime

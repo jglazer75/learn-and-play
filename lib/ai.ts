@@ -11,7 +11,7 @@ export async function getGeminiClient() {
 
 export async function generateLessonContent(weekTitle: string, gameTitle: string, objective: string, activity: string) {
     const genAI = await getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
     You are an expert Video Game Historian and Early Childhood Educator writing a "Manual" for a father and son playing through a video game curriculum.
@@ -44,5 +44,14 @@ export async function generateLessonContent(weekTitle: string, gameTitle: string
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    let text = response.text();
+
+    // Strip markdown code blocks if present
+    if (text.startsWith('```markdown')) {
+        text = text.replace(/^```markdown\n/, '').replace(/\n```$/, '');
+    } else if (text.startsWith('```')) {
+        text = text.replace(/^```\n/, '').replace(/\n```$/, '');
+    }
+
+    return text;
 }
