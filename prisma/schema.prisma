@@ -1,0 +1,87 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  role      String   // "HISTORIAN" | "LEARNER"
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  reviews   Review[]
+}
+
+model Block {
+  id          String @id @default(uuid())
+  order       Int
+  title       String
+  description String
+  weeks       Week[]
+}
+
+model Week {
+  id              String   @id @default(uuid())
+  blockId         String
+  block           Block    @relation(fields: [blockId], references: [id])
+  weekNumber      Int
+  title           String
+  gameId          String?
+  game            Game?    @relation(fields: [gameId], references: [id])
+  activity        String
+  objective       String
+  historianLesson String
+  isCompleted     Boolean  @default(false)
+  reviews         Review[]
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  platform    String?
+  coverUrl    String?
+  description String?
+  releaseDate DateTime?
+  weeks       Week[]
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  weekId    String
+  week      Week     @relation(fields: [weekId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+model SideQuest {
+  id          String  @id @default(uuid())
+  title       String
+  location    String
+  mission     String
+  type        String  // "LOCAL", "REGIONAL", "NATIONAL"
+  isCompleted Boolean @default(false)
+}
+
+model Resource {
+  id          String  @id @default(uuid())
+  title       String
+  type        String  // "BOOK", "VIDEO", "TV"
+  url         String?
+  audience    String  // "DAD", "SON", "BOTH"
+  isCompleted Boolean @default(false)
+}
+
+model AppSettings {
+  id             String @id @default("settings")
+  dataSource     String @default("WIKIPEDIA") // "WIKIPEDIA" | "IGDB"
+  igdbClientId   String?
+  igdbClientSecret String?
+}

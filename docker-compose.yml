@@ -1,0 +1,21 @@
+
+
+services:
+  learn-play:
+    container_name: learn-play
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_URL=postgresql://learnplay:learnplay_secure_pass@postgresql-postgres-1:5432/learnplay?schema=public
+      - REDIS_URL=redis://redis-redis-1:6379
+    networks:
+      - ogsdell-network
+
+networks:
+  ogsdell-network:
+    external: true
+    name: ogsdell-network
